@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b0e0c" />
+    <meta name="description" content="Deadlock Plus：根据敌方阵容、阶段与预算生成可解释的局内反制配装方案。" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>Deadlock Plus · 局内反制配装</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Deadlock Plus 首页">
+          <span class="brand-mark">D<span>+</span></span>
+          <span>DEADLOCK <b>PLUS</b></span>
+        </a>
+        <div class="topbar-meta">
+          <span class="live-pill"><i></i> 策略数据快照</span>
+          <span class="build-label">2026.09 · MVP</span>
+        </div>
+      </header>
+
+      <main>
+        <section class="workspace-head">
+          <div>
+            <p class="eyebrow">COUNTER BUILD LAB</p>
+            <h1>把魂花在<span>真正克制</span>对面的位置</h1>
+          </div>
+          <p class="intro">选定阵容与局势，立即生成分阶段购买顺序。每个建议都说明针对谁、为什么买、何时使用。</p>
+        </section>
+
+        <section class="control-panel" aria-label="对局信息">
+          <div class="control-block hero-control">
+            <div class="field-label"><span>01</span> 我的英雄</div>
+            <button class="selector" id="playerSelector" type="button" aria-haspopup="listbox" aria-expanded="false">
+              <span class="hero-avatar" id="playerAvatar">HA</span>
+              <span><small>当前选择</small><strong id="playerName">Haze</strong></span>
+              <span class="chevron">⌄</span>
+            </button>
+            <div class="picker" id="playerPicker" role="listbox" hidden></div>
+          </div>
+
+          <div class="control-block enemy-control">
+            <div class="field-label"><span>02</span> 敌方阵容 <em id="enemyCount">3 / 6</em></div>
+            <button class="enemy-strip" id="enemySelector" type="button" aria-haspopup="dialog" aria-expanded="false">
+              <span id="enemyAvatars" class="avatar-stack"></span>
+              <span class="enemy-copy"><small>点击调整对手</small><strong id="enemyNames"></strong></span>
+              <span class="plus-icon">＋</span>
+            </button>
+            <div class="picker enemy-picker" id="enemyPicker" hidden>
+              <div class="picker-title"><strong>选择敌方英雄</strong><span>最多 6 名</span></div>
+              <div id="enemyGrid" class="hero-grid"></div>
+            </div>
+          </div>
+
+          <div class="control-block phase-control">
+            <div class="field-label"><span>03</span> 当前阶段</div>
+            <div class="segment" id="phaseTabs" aria-label="对局阶段">
+              <button type="button" data-phase="lane">对线 <small>0–10m</small></button>
+              <button type="button" class="active" data-phase="mid">中期 <small>10–25m</small></button>
+              <button type="button" data-phase="late">后期 <small>25m+</small></button>
+            </div>
+          </div>
+
+          <div class="control-block budget-control">
+            <div class="field-label"><span>04</span> 可用魂数 <output id="budgetValue">6,400</output></div>
+            <input id="budgetRange" type="range" min="800" max="16000" step="800" value="6400" aria-label="可用魂数" />
+            <div class="range-labels"><span>800</span><span>16,000</span></div>
+          </div>
+        </section>
+
+        <section class="analysis-grid">
+          <aside class="threat-panel">
+            <div class="section-heading">
+              <div><p class="eyebrow">THREAT SCAN</p><h2>阵容威胁</h2></div>
+              <span id="threatLevel" class="danger-level">高压</span>
+            </div>
+            <div id="threatBars" class="threat-bars"></div>
+            <div class="readout" id="threatReadout"></div>
+            <div class="quick-tip">
+              <span class="tip-icon">!</span>
+              <p><strong>局内原则</strong><span id="quickTipText"></span></p>
+            </div>
+          </aside>
+
+          <section class="recommendations">
+            <div class="section-heading recommendations-head">
+              <div>
+                <p class="eyebrow">LIVE PURCHASE PLAN</p>
+                <h2>优先购买方案 <span id="resultCount"></span></h2>
+              </div>
+              <label class="switch-label">
+                <input id="activeOnly" type="checkbox" />
+                <span class="switch"></span>
+                仅主动装备
+              </label>
+            </div>
+            <div id="planSummary" class="plan-summary"></div>
+            <div id="itemList" class="item-list" aria-live="polite"></div>
+            <div id="emptyState" class="empty-state" hidden>
+              <strong>没有符合条件的装备</strong>
+              <span>关闭“仅主动装备”或提高预算后再试。</span>
+            </div>
+          </section>
+        </section>
+      </main>
+
+      <footer>
+        <span>Deadlock Plus 是非官方玩家工具，与 Valve 无关联。</span>
+        <span>数据参考 <a href="https://deadlock.io/" target="_blank" rel="noreferrer">Deadlock.io</a> 与 <a href="https://deadlock.wiki/Item" target="_blank" rel="noreferrer">Deadlock Wiki</a></span>
+      </footer>
+    </div>
+    <script src="./app.js"></script>
+  </body>
+</html>
