@@ -1,36 +1,386 @@
-const H=[
-{id:6,n:"Abrams",c:"AB",r:"Melee tank",t:{melee:3,control:2,sustain:2,burst:1}},{id:21,n:"Bebop",c:"BE",r:"Pick burst",t:{spirit:2,control:3,burst:3,dive:1}},{id:11,n:"Dynamo",c:"DY",r:"Team control",t:{spirit:2,control:3,area:3,support:2}},{id:17,n:"Grey Talon",c:"GT",r:"Ranged spirit",t:{spirit:3,range:3,burst:2}},{id:13,n:"Haze",c:"HA",r:"Gun assassin",t:{weapon:3,dive:3,control:2,burst:2}},{id:1,n:"Infernus",c:"IN",r:"Sustained spirit",t:{spirit:3,sustain:2,healing:2,area:1}},{id:20,n:"Ivy",c:"IV",r:"Gun support",t:{weapon:2,support:3,control:2,area:1}},{id:12,n:"Kelvin",c:"KE",r:"Slow support",t:{spirit:2,slow:3,support:2,healing:2}},{id:31,n:"Lash",c:"LA",r:"Dive burst",t:{burst:3,control:2,dive:3,spirit:2}},{id:18,n:"Mo & Krill",c:"MK",r:"Control tank",t:{control:3,melee:2,sustain:2,spirit:1}},{id:50,n:"Pocket",c:"PO",r:"Spirit assassin",t:{spirit:3,burst:3,dive:3,area:1}},{id:2,n:"Seven",c:"SE",r:"Area spirit",t:{spirit:3,area:3,control:2}},{id:19,n:"Shiv",c:"SH",r:"Sustain finisher",t:{sustain:3,dive:2,burst:2,healing:2}},{id:3,n:"Vindicta",c:"VI",r:"Ranged gun",t:{weapon:3,range:3,burst:2}},{id:25,n:"Warden",c:"WA",r:"Chase control",t:{control:3,chase:3,burst:2,spirit:1}},{id:8,n:"Wraith",c:"WR",r:"Gun duelist",t:{weapon:3,control:2,dive:2,burst:2}}];
-const I=[
-{n:"Rusted Barrel",c:"RB",k:"Spirit",p:800,a:1,x:{weapon:3,range:1},f:{lane:4,mid:2,late:0},w:"Cuts the fire rate of a weapon carry before their damage window opens.",u:"Cast as the enemy commits to a sustained trade, not while they reload."},
-{n:"Debuff Reducer",c:"DR",k:"Vitality",p:1600,a:0,x:{control:3,slow:2,chase:1},f:{lane:2,mid:4,late:2},w:"Shortens disables and slows, preserving movement through layered control.",u:"Pair the passive protection with disciplined stamina use."},
-{n:"Reactive Barrier",c:"RB",k:"Vitality",p:1600,a:0,x:{control:3,burst:2,dive:1},f:{lane:4,mid:3,late:0},w:"Creates a survival buffer when the enemy opens with a disable.",u:"Let the barrier absorb the first follow-up, then counter-engage or reach cover."},
-{n:"Return Fire",c:"RF",k:"Vitality",p:1600,a:1,x:{weapon:3,dive:2,range:1},f:{lane:1,mid:4,late:3},w:"Punishes sustained weapon damage and forces the carry to interrupt pressure.",u:"Activate after the weapon carry commits; avoid reload downtime."},
-{n:"Healbane",c:"HB",k:"Vitality",p:1600,a:0,x:{healing:3,sustain:3,support:2},f:{lane:2,mid:4,late:3},w:"Reduces recovery and lifesteal so a durable target cannot reset the fight.",u:"Keep dealing hero damage through the enemy recovery window."},
-{n:"Counterspell",c:"CS",k:"Vitality",p:3200,a:1,x:{spirit:3,burst:3,control:2},f:{lane:0,mid:4,late:4},w:"Answers one predictable spell that would otherwise start or end the fight.",u:"Reserve it for the enemy's decisive cast, not routine poke."},
-{n:"Dispel Magic",c:"DM",k:"Vitality",p:3200,a:1,x:{control:3,slow:3,spirit:1},f:{lane:0,mid:4,late:4},w:"Removes the negative effect denying your escape or damage window.",u:"Use after the key debuff lands; do not overlap another defensive active."},
-{n:"Metal Skin",c:"MS",k:"Vitality",p:3200,a:1,x:{weapon:5,melee:2,dive:2},f:{lane:0,mid:4,late:5},w:"Creates a hard weapon-damage denial window against a committed gun carry.",u:"Wait for commitment, then cross space or reach cover."},
-{n:"Bullet Resilience",c:"BR",k:"Vitality",p:3200,a:0,x:{weapon:4,range:2},f:{lane:0,mid:4,late:4},w:"Provides persistent mitigation when several weapon threats keep you under fire.",u:"Best when you must remain visible and cannot rely on one short active."},
-{n:"Spirit Resilience",c:"SR",k:"Vitality",p:3200,a:0,x:{spirit:4,area:2,burst:1},f:{lane:0,mid:4,late:4},w:"Stabilizes incoming spirit damage across repeated casts and area pressure.",u:"It improves your margin; still leave persistent damage zones quickly."},
-{n:"Warp Stone",c:"WS",k:"Weapon",p:3200,a:1,x:{dive:3,chase:3,area:2,melee:2},f:{lane:0,mid:4,late:4},w:"Breaks a dive angle and exits lethal area control without giving up the fight.",u:"Save the displacement for terrain or vertical separation."},
-{n:"Rescue Beam",c:"RE",k:"Vitality",p:3200,a:1,x:{dive:2,burst:2,support:2},f:{lane:0,mid:3,late:4},w:"Denies a single-target collapse by healing and repositioning the focused ally.",u:"Begin the save before execute range and pull from a safe angle."},
-{n:"Unstoppable",c:"UN",k:"Vitality",p:6400,a:1,x:{control:5,slow:3,chase:2},f:{lane:0,mid:1,late:6},w:"Protects the channel or damage window enemy control is built to cancel.",u:"Activate immediately before the committed entry or channeled ultimate."},
-{n:"Spellbreaker",c:"SB",k:"Vitality",p:6400,a:0,x:{spirit:5,burst:4},f:{lane:0,mid:1,late:6},w:"Adds a late-game firewall against the first major spirit burst.",u:"Preserve the shield for the primary threat instead of incidental poke."},
-{n:"Plated Armor",c:"PA",k:"Vitality",p:6400,a:0,x:{weapon:5,range:4,burst:2},f:{lane:0,mid:1,late:6},w:"Provides high-tier protection against a weapon-heavy draft and large hits.",u:"Still use cover to avoid simultaneous fire from multiple carries."},
-{n:"Colossus",c:"CO",k:"Vitality",p:6400,a:1,x:{melee:4,area:2,control:2,burst:2},f:{lane:0,mid:1,late:5},w:"Reinforces front-line presence when melee pressure and area damage arrive together.",u:"Use as the close-range collapse begins, not after disengagement."}];
-const L={weapon:"Weapon damage",spirit:"Spirit damage",control:"Hard control",dive:"Dive pressure",sustain:"Sustain",burst:"Burst",healing:"Healing",area:"Area denial",range:"Long range",melee:"Melee pressure",slow:"Slows",chase:"Chase",support:"Team support"};
-const S={player:"Haze",enemies:["Abrams","Haze","Seven"],phase:"mid",budget:6400,activeOnly:false,source:"manual",liveStatus:"idle",match:null,players:new Map(),perspective:null,time:null,last:null,events:[],total:0};
-let client,sub,draftPlayer=S.player,draftEnemies=[...S.enemies];const $=q=>document.querySelector(q),hn=n=>H.find(h=>h.n===n),hi=id=>H.find(h=>h.id===+id),fmt=n=>new Intl.NumberFormat("en-US").format(n);
-function threats(){let o={};S.enemies.forEach(n=>Object.entries(hn(n)?.t||{}).forEach(([k,v])=>o[k]=(o[k]||0)+v));return o}
-function scored(){let t=threats();return I.map(i=>({...i,s:(i.f[S.phase]||0)*2.3+Object.entries(i.x).reduce((z,[k,v])=>z+(t[k]||0)*v,0)-(i.p>S.budget?Math.min(8,(i.p-S.budget)/800):0)})).filter(i=>!S.activeOnly||i.a).sort((a,b)=>b.s-a.s)}
-function targets(i){return S.enemies.map(n=>({n,v:Object.entries(i.x).reduce((z,[k,v])=>z+(hn(n)?.t[k]||0)*v,0)})).filter(x=>x.v).sort((a,b)=>b.v-a.v).slice(0,3).map(x=>x.n)}
-function clock(v){return Number.isFinite(v)?`${Math.floor(Math.max(0,v)/60)}:${String(Math.round(Math.max(0,v))%60).padStart(2,"0")}`:"—"}
-function renderStatus(){let st=$("#globalStatus");st.dataset.state=S.liveStatus==="connected"?"live":S.liveStatus;$("#globalStatusText").textContent={idle:"Manual mode",connecting:"Connecting",connected:"Live feed",error:"Connection issue",ended:"Match ended"}[S.liveStatus]||"Manual mode";$("#sourceBadge").textContent={connected:"LIVE",connecting:"LINKING",error:"ERROR",ended:"ENDED"}[S.liveStatus]||"OFFLINE";$("#sourceBadge").classList.toggle("live",S.liveStatus==="connected");$("#matchId").textContent=S.match||"—";$("#gameClock").textContent=clock(S.time);$("#lastEvent").textContent=S.last?`${Math.round((Date.now()-S.last)/1000)}s ago`:"—";$("#connectLabel").textContent=S.liveStatus==="connected"?"Reconnect public match":S.liveStatus==="connecting"?"Connecting…":"Connect live match";$("#connectLive").disabled=S.liveStatus==="connecting"}
-function render(){renderStatus();let p=hn(S.player)||H[0];$("#playerMonogram").textContent=p.c;$("#playerName").textContent=p.n;$("#playerRole").textContent=p.r;$("#enemyCount").textContent=`${S.enemies.length} / 6`;$("#enemyRoster").innerHTML=S.enemies.map(n=>{let h=hn(n);return `<div class="enemy"><span class="mono">${h?.c||"?"}</span><strong>${h?.n||n}</strong><em>${h?.r||"Unknown"}</em></div>`}).join("")||'<div class="empty">Waiting for a valid enemy roster.</div>';let ts=Object.entries(threats()).sort((a,b)=>b[1]-a[1]),max=Math.max(1,...ts.map(x=>x[1]));$("#primaryPressure").textContent=ts[0]?L[ts[0][0]]:"No draft data";$("#threatChips").innerHTML=ts.slice(0,5).map(([k,v],i)=>`<span class="chip ${i<2?"hot":""}">${L[k]} · ${v}</span>`).join("");$("#pressureLevel").textContent=ts.reduce((z,x)=>z+x[1],0)>=25?"HIGH PRESSURE":"MODERATE";$("#threatBars").innerHTML=ts.slice(0,6).map(([k,v])=>`<div class="bar"><label>${L[k]}</label><div class="track"><div class="fill" style="width:${Math.max(8,v/max*100)}%"></div></div><span>${String(v).padStart(2,"0")}</span></div>`).join("");let items=scored(),top=items[0];if(top){let tg=targets(top);$("#heroRecommendation").innerHTML=`<div class="feature-icon"><span>${top.c}</span></div><div class="feature-block"><small>${top.k} · ${top.a?"Active":"Passive"}</small><h3>${top.n}</h3><b>${fmt(top.p)} SOULS</b></div><div class="feature-block"><p><strong>${top.w}</strong><br>${top.u}</p></div><div class="feature-block"><small>Highest impact against</small><div class="targets">${(tg.length?tg:["General"]).map(n=>`<span>${n}</span>`).join("")}</div></div>`;$("#itemRoute").innerHTML=items.slice(1,5).map((i,j)=>`<article><span>0${j+2}</span><div><small>${i.k} · ${i.a?"Active":"Passive"}</small><strong>${i.n}</strong><em>${fmt(i.p)} souls</em></div></article>`).join("")}$("#eventCount").textContent=`${S.total} EVENT${S.total===1?"":"S"}`;$("#eventLog").innerHTML=S.events.length?S.events.slice(0,8).map(e=>`<div class="event"><time>${e.time}</time><p>${e.text}</p></div>`).join(""):'<div class="empty">Connect the public live feed to receive roster, score and match-state events. Manual counterbuilding remains available while offline.</div>';$("#budgetValue").textContent=fmt(S.budget)}
-function add(text){S.total++;S.last=Date.now();S.events.unshift({time:clock(S.time)==="—"?"LIVE":clock(S.time),text});S.events=S.events.slice(0,20)}function pick(o,ks){for(let k of ks)if(o?.[k]!=null)return o[k]}
-function playerFrom(e){let p=e.data||e.entity||e.payload||e,id=String(pick(p,["player_slot","player_id","account_id","entity_id","entindex"])??"");if(!id)return;let hero=+pick(p,["hero_id","selected_hero_id","heroId"]),team=+pick(p,["team_number","team_num","team","team_id"]);return{id,hero:Number.isFinite(hero)?hero:undefined,team:Number.isFinite(team)?team:undefined,name:pick(p,["steam_name","player_name","name"])}}
-function sync(){let ps=[...S.players.values()].filter(p=>hi(p.hero)),sel=$("#livePerspective");if(!ps.length){sel.disabled=true;sel.innerHTML="<option>Waiting for roster…</option>";return}sel.disabled=false;if(!S.perspective||!ps.some(p=>p.id===S.perspective))S.perspective=ps[0].id;sel.innerHTML=ps.map(p=>`<option value="${p.id}" ${p.id===S.perspective?"selected":""}>${hi(p.hero).n}${p.name?` · ${p.name}`:""}</option>`).join("");let me=ps.find(p=>p.id===S.perspective)||ps[0];S.player=hi(me.hero).n;let opp=ps.filter(p=>p.team!=null&&me.team!=null&&p.team!==me.team).map(p=>hi(p.hero)?.n).filter(Boolean);if(opp.length)S.enemies=[...new Set(opp)].slice(0,6)}
-function liveEvent(raw){let e=raw?.data&&raw.event_type==null?raw.data:raw,type=String(e?.event_type||e?.type||"event"),entity=String(e?.entity_type||"");S.last=Date.now();let tm=+pick(e,["game_time","game_time_s","match_time"]);if(Number.isFinite(tm))S.time=tm;if(entity==="game_rules_proxy"){let p=e.data||e.entity||e.payload||e,v=+pick(p,["game_time","game_time_s","match_time","m_fGameTime"]);if(Number.isFinite(v))S.time=v}if(entity==="player_controller"&&(type.includes("create")||type.includes("update"))){let p=playerFrom(e);if(p){S.players.set(p.id,{...(S.players.get(p.id)||{}),...p});sync()}}if(type==="hero_killed")add("<strong>Hero kill registered.</strong> Threat coverage refreshed against the current roster.");else if(type==="state_jump_warning")add("<strong>Telemetry resynced.</strong> Current entity state replaces an upstream gap.");else if(type==="end"){S.liveStatus="ended";add("<strong>Match complete.</strong> Recommendations are frozen at the final state.");client?.disconnect()}else if(S.total<3&&entity==="player_controller")add("<strong>Roster update.</strong> Player state received from the live match.");if(Number.isFinite(S.time))S.phase=S.time<600?"lane":S.time<1500?"mid":"late";document.querySelectorAll("[data-phase]").forEach(b=>b.classList.toggle("active",b.dataset.phase===S.phase));render()}
-async function disconnect(){try{sub?.unsubscribe()}catch{}try{client?.disconnect()}catch{}sub=client=null}async function connect(){await disconnect();S.liveStatus="connecting";S.players.clear();S.perspective=null;S.events=[];S.total=0;$("#sourceMessage").classList.remove("error");$("#sourceMessage").textContent="Requesting the current public match and opening its event channel…";render();try{let r=await fetch("https://live.deadlock-api.com/api/v2/public/subscribe",{method:"POST",headers:{"Content-Type":"application/json"}});if(!r.ok)throw Error(r.status===429?"The shared public feed is rate-limited. Retry shortly.":`Live service returned ${r.status}.`);let s=await r.json();if(!s.url||!s.channel||!s.token)throw Error("The live service returned an incomplete session.");S.match=String(s.match_id||s.channel.replace("match:",""));let m=await import("https://cdn.jsdelivr.net/npm/centrifuge@5/+esm"),C=m.Centrifuge||m.default;client=new C(s.url,{token:s.token,timeout:10000});sub=client.newSubscription(s.channel);sub.on("publication",c=>liveEvent(c.data));sub.on("subscribed",()=>{S.liveStatus="connected";S.source="live";$("#sourceMessage").textContent="Receiving spectator-delayed events from a real public match. Choose any detected player as your perspective.";add("<strong>Live channel connected.</strong> Waiting for roster and game state.");render()});sub.on("error",c=>{S.liveStatus="error";$("#sourceMessage").classList.add("error");$("#sourceMessage").textContent=c?.error?.message||"The match channel reported an error.";render()});sub.subscribe();client.connect()}catch(e){S.liveStatus="error";$("#sourceMessage").classList.add("error");$("#sourceMessage").textContent=e?.message||"Unable to connect to the public match.";render()}}
-function draft(){draftPlayer=S.player;draftEnemies=[...S.enemies];drawDraft();$("#draftDialog").showModal()}function drawDraft(){$("#playerGrid").innerHTML=H.map(h=>`<button type="button" class="hero-option ${h.n===draftPlayer?"selected":""}" data-p="${h.n}"><span class="mono">${h.c}</span><strong>${h.n}</strong></button>`).join("");$("#enemyGrid").innerHTML=H.map(h=>`<button type="button" class="hero-option ${draftEnemies.includes(h.n)?"selected":""}" data-e="${h.n}"><span class="mono">${h.c}</span><strong>${h.n}</strong></button>`).join("");$("#draftSummary").textContent=`${draftEnemies.length} ${draftEnemies.length===1?"enemy":"enemies"} selected`}
-$("#connectLive").onclick=connect;$("#perspectiveButton").onclick=$("#editDraft").onclick=draft;$("#livePerspective").onchange=e=>{S.perspective=e.target.value;sync();render()};$("#phaseTabs").onclick=e=>{let b=e.target.closest("[data-phase]");if(!b)return;S.phase=b.dataset.phase;document.querySelectorAll("[data-phase]").forEach(x=>x.classList.toggle("active",x===b));render()};$("#budgetRange").oninput=e=>{S.budget=+e.target.value;render()};$("#activeOnly").onchange=e=>{S.activeOnly=e.target.checked;render()};$("#playerGrid").onclick=e=>{let b=e.target.closest("[data-p]");if(b){draftPlayer=b.dataset.p;drawDraft()}};$("#enemyGrid").onclick=e=>{let b=e.target.closest("[data-e]");if(!b)return;draftEnemies=draftEnemies.includes(b.dataset.e)?draftEnemies.filter(n=>n!==b.dataset.e):draftEnemies.length<6?[...draftEnemies,b.dataset.e]:draftEnemies;drawDraft()};$("#applyDraft").onclick=e=>{e.preventDefault();S.player=draftPlayer;S.enemies=[...draftEnemies];S.source="manual";S.perspective=null;$("#draftDialog").close();render()};
-function webmcp(){let c=document.modelContext;if(!c?.registerTool)return;let reg=t=>Promise.resolve(c.registerTool(t)).catch(()=>{});reg({name:"start_public_live_match",title:"Connect public live match",description:"Connect to the rotating public Deadlock match feed and update the visible counterbuild.",inputSchema:{type:"object",properties:{},additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:true},async execute(){await connect();return{status:S.liveStatus,matchId:S.match,detectedPlayers:S.players.size}}});reg({name:"read_counterbuild",title:"Read current counterbuild",description:"Read the current match source, draft and item route without changing state.",inputSchema:{type:"object",properties:{},additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:false},execute(){return{source:S.source,liveStatus:S.liveStatus,matchId:S.match,player:S.player,enemies:S.enemies,phase:S.phase,budget:S.budget,recommendations:scored().slice(0,5).map(i=>({name:i.n,cost:i.p,reason:i.w}))}}})}render();webmcp();setInterval(()=>S.last&&renderStatus(),1000);
+const SOULS_PER_MINUTE = 80;
+const STARTING_VALUE = 400;
+const HATCH_DURATION_MS = 2000;
+const CLICK_GUARD_MS = 300;
+const buffs = [
+  { id: "fire", name: "射速", icon: "./assets/buff-fire-rate.svg", weight: 1 },
+  { id: "ammo", name: "弹药量", icon: "./assets/buff-ammo.svg", weight: 1 },
+  { id: "cooldown", name: "冷却缩减", icon: "./assets/buff-cooldown.svg", weight: 1 },
+  { id: "weapon", name: "武器伤害", icon: "./assets/buff-weapon.svg", weight: 1 },
+  { id: "health", name: "最大生命", icon: "./assets/buff-health.svg", weight: 2 },
+  { id: "spirit", name: "元灵力量", icon: "./assets/buff-spirit.svg", weight: 1 }
+];
+
+const state = {
+  phase: "ready",
+  mode: "infinite",
+  targetMinutes: 30,
+  paused: false,
+  timerReady: false,
+  hatching: false,
+  hatchStartedAt: null,
+  pausedBeforeHatch: false,
+  activeSeconds: 0,
+  lastTick: null,
+  rewards: []
+};
+
+const $ = selector => document.querySelector(selector);
+const soulValue = $("#soulValue");
+const heldTime = $("#heldTime");
+const accruedSouls = $("#accruedSouls");
+const buffCount = $("#buffCount");
+const growthFill = $("#growthFill");
+const progressLabel = $("#progressLabel");
+const progressTime = $("#progressTime");
+const primaryAction = $("#primaryAction");
+const lifeToggle = $("#lifeToggle");
+const skipMinute = $("#skipMinute");
+const eggButton = $("#eggButton");
+const eggState = $("#eggState");
+const eggAura = $("#eggAura");
+const hatchDialog = $("#hatchDialog");
+const timerDialog = $("#timerDialog");
+const cancelDialog = $("#cancelDialog");
+const timerHatchButton = $("#timerHatchButton");
+const targetMinutes = $("#targetMinutes");
+const timerConfig = $("#timerConfig");
+let audioContext;
+const lastButtonClick = new WeakMap();
+
+function onGuardedClick(button, handler) {
+  button.addEventListener("click", event => {
+    const now = performance.now();
+    const last = lastButtonClick.get(button) ?? -Infinity;
+    if (now - last < CLICK_GUARD_MS) {
+      event.preventDefault();
+      return;
+    }
+    lastButtonClick.set(button, now);
+    handler(event);
+  });
+}
+
+function accrued() {
+  return Math.floor(state.activeSeconds * SOULS_PER_MINUTE / 60);
+}
+
+function formatTime(seconds) {
+  const whole = Math.max(0, Math.floor(seconds));
+  const minutes = Math.floor(whole / 60);
+  const secs = whole % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+}
+
+function getAudioContext() {
+  const AudioCtor = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtor) return null;
+  audioContext ||= new AudioCtor();
+  if (audioContext.state === "suspended") audioContext.resume();
+  return audioContext;
+}
+
+function tone(frequency, start, duration, type = "sine", volume = 0.08) {
+  const context = getAudioContext();
+  if (!context) return;
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(frequency, start);
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.exponentialRampToValueAtTime(volume, start + 0.018);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+  oscillator.connect(gain).connect(context.destination);
+  oscillator.start(start);
+  oscillator.stop(start + duration + 0.02);
+}
+
+function purchaseSound() {
+  const context = getAudioContext();
+  if (!context) return;
+  const now = context.currentTime;
+  tone(392, now, .16, "triangle", .055);
+  tone(659.25, now + .09, .26, "sine", .075);
+}
+
+function hatchSound() {
+  const context = getAudioContext();
+  if (!context) return;
+  const now = context.currentTime;
+  [523.25, 659.25, 783.99, 1046.5].forEach((frequency, index) => {
+    tone(frequency, now + index * .075, .34, index < 2 ? "triangle" : "sine", .065);
+  });
+  tone(1567.98, now + .34, .7, "sine", .04);
+}
+
+function render() {
+  const earned = accrued();
+  const count = Math.floor(earned / SOULS_PER_MINUTE);
+  const active = state.phase === "holding";
+  const targetSeconds = state.targetMinutes * 60;
+
+  soulValue.textContent = String(STARTING_VALUE + earned);
+  heldTime.textContent = formatTime(state.activeSeconds);
+  accruedSouls.textContent = `${earned} 魂魄`;
+  buffCount.textContent = `${count} 个`;
+
+  if (state.mode === "timer") {
+    growthFill.style.width = `${Math.min(100, state.activeSeconds / targetSeconds * 100)}%`;
+    progressLabel.textContent = "定时孵化";
+    progressTime.textContent = `${formatTime(state.activeSeconds)} / ${formatTime(targetSeconds)}`;
+  } else {
+    const cycleSeconds = state.activeSeconds % 60;
+    growthFill.style.width = `${cycleSeconds / 60 * 100}%`;
+    progressLabel.textContent = "下一次增益";
+    progressTime.textContent = formatTime(cycleSeconds === 0 && state.activeSeconds > 0 ? 60 : 60 - cycleSeconds);
+  }
+
+  const hatchProgress = state.hatching && state.hatchStartedAt !== null
+    ? Math.min(1, (performance.now() - state.hatchStartedAt) / HATCH_DURATION_MS)
+    : 0;
+
+  primaryAction.innerHTML = active
+    ? state.hatching
+      ? `<span class="channel-label">孵化中 · 空格取消</span>`
+      : `<span class="action-label">孵化鹅蛋 <kbd>Z</kbd></span><span>${STARTING_VALUE + earned}</span>`
+    : `${state.phase === "hatched" ? "再买一颗" : "购入金鹅蛋"} <span>800</span>`;
+  primaryAction.classList.toggle("danger-action", active);
+  primaryAction.classList.toggle("channeling", state.hatching);
+  primaryAction.style.setProperty("--hatch-progress", `${hatchProgress * 100}%`);
+  timerHatchButton.classList.toggle("channeling", state.hatching);
+  timerHatchButton.style.setProperty("--hatch-progress", `${hatchProgress * 100}%`);
+  timerHatchButton.innerHTML = state.hatching
+    ? `<span class="channel-label">孵化中 · 空格取消</span>`
+    : `<span class="action-label">孵化鹅蛋 <kbd>Z</kbd></span>`;
+  lifeToggle.disabled = !active || state.timerReady || state.hatching;
+  skipMinute.disabled = !active || state.timerReady || state.hatching;
+  lifeToggle.textContent = state.paused ? "继续孵化" : "暂停孵化";
+  lifeToggle.classList.toggle("paused", state.paused);
+  eggButton.classList.toggle("holding", active && !state.paused && !state.hatching);
+  eggAura.classList.toggle("growing", active && earned >= SOULS_PER_MINUTE);
+  eggState.textContent = !active
+    ? "尚未购入"
+    : state.hatching
+      ? "正在孵化 · 空格取消"
+    : state.timerReady
+      ? "时间已到 · 等待孵化"
+    : state.paused
+      ? "孵化暂停"
+      : state.mode === "timer"
+        ? `定时孵化 · ${state.targetMinutes} 分钟`
+        : `无限孵化 · ${SOULS_PER_MINUTE}/分钟`;
+  eggButton.setAttribute("aria-label", active ? "取消金鹅蛋计时" : "购买金鹅蛋");
+
+  document.querySelectorAll("[data-mode]").forEach(button => {
+    const selected = button.dataset.mode === state.mode;
+    button.classList.toggle("active", selected);
+    button.setAttribute("aria-pressed", String(selected));
+    button.disabled = active;
+  });
+  timerConfig.hidden = state.mode !== "timer";
+  targetMinutes.disabled = active;
+  $("#hint").textContent = state.mode === "timer"
+    ? `达到 ${state.targetMinutes} 分钟后会提醒你点击孵化；也可以提前孵化。`
+    : "无限模式下，进度条每分钟循环一次；你可以随时孵化。";
+}
+
+function clearBuffResults() {
+  document.querySelectorAll("#buffGrid article").forEach(card => {
+    card.classList.remove("won");
+    card.querySelector("strong").textContent = "等待孵化";
+  });
+}
+
+function buyEgg() {
+  state.phase = "holding";
+  state.paused = false;
+  state.timerReady = false;
+  state.hatching = false;
+  state.hatchStartedAt = null;
+  state.pausedBeforeHatch = false;
+  state.activeSeconds = 0;
+  state.lastTick = performance.now();
+  state.rewards = [];
+  clearBuffResults();
+  purchaseSound();
+  render();
+}
+
+function pickBuff() {
+  const weighted = buffs.flatMap(buff => Array(buff.weight).fill(buff));
+  return weighted[Math.floor(Math.random() * weighted.length)];
+}
+
+function beginHatch() {
+  if (state.phase !== "holding" || state.hatching) return;
+  state.pausedBeforeHatch = state.paused;
+  state.paused = true;
+  state.hatching = true;
+  state.hatchStartedAt = performance.now();
+  state.lastTick = state.hatchStartedAt;
+  render();
+}
+
+function cancelHatch() {
+  if (!state.hatching) return;
+  state.hatching = false;
+  state.hatchStartedAt = null;
+  state.paused = state.pausedBeforeHatch;
+  state.lastTick = performance.now();
+  render();
+}
+
+function showCancelDialog() {
+  if (state.phase !== "holding" || cancelDialog.open) return;
+  if (state.hatching) cancelHatch();
+  cancelDialog.showModal();
+}
+
+function dismissCancelDialog() {
+  if (cancelDialog.open) cancelDialog.close();
+  if (state.timerReady && !timerDialog.open) timerDialog.showModal();
+}
+
+function cancelEgg() {
+  if (state.phase !== "holding") return;
+  if (cancelDialog.open) cancelDialog.close();
+  if (timerDialog.open) timerDialog.close();
+  state.phase = "ready";
+  state.paused = false;
+  state.timerReady = false;
+  state.hatching = false;
+  state.hatchStartedAt = null;
+  state.pausedBeforeHatch = false;
+  state.activeSeconds = 0;
+  state.lastTick = null;
+  state.rewards = [];
+  eggButton.classList.remove("holding", "hatching");
+  clearBuffResults();
+  render();
+}
+
+function completeHatch() {
+  if (state.phase !== "holding" || !state.hatching) return;
+  if (timerDialog.open) timerDialog.close();
+  state.hatching = false;
+  state.hatchStartedAt = null;
+  state.timerReady = false;
+  const earned = accrued();
+  const count = Math.floor(earned / SOULS_PER_MINUTE);
+  state.rewards = Array.from({ length: count }, pickBuff);
+  state.phase = "hatched";
+  hatchSound();
+  eggButton.classList.remove("holding");
+  eggButton.classList.add("hatching");
+  $("#resultTitle").textContent = state.activeSeconds > 60 * 60
+    ? "鹅蛋孵化了，但是..."
+    : "鹅蛋孵化了。";
+  $("#resultSouls").textContent = String(STARTING_VALUE + earned);
+
+  const totals = state.rewards.reduce((map, buff) => map.set(buff.id, (map.get(buff.id) || 0) + 1), new Map());
+  $("#resultBuffs").innerHTML = count
+    ? buffs.filter(buff => totals.has(buff.id)).map(buff => `<span><img src="${buff.icon}" alt="">${buff.name} × ${totals.get(buff.id)}</span>`).join("")
+    : "<span>尚未积累永久增益</span>";
+
+  buffs.forEach(buff => {
+    const card = document.querySelector(`[data-buff="${buff.id}"]`);
+    const total = totals.get(buff.id) || 0;
+    card.classList.toggle("won", total > 0);
+    card.querySelector("strong").textContent = total ? `获得 × ${total}` : "本次未获得";
+  });
+
+  render();
+  setTimeout(() => {
+    eggButton.classList.remove("hatching");
+    hatchDialog.showModal();
+  }, 700);
+}
+
+function action() {
+  if (state.phase === "holding") beginHatch();
+  else buyEgg();
+}
+
+function eggAction() {
+  if (state.phase === "holding") showCancelDialog();
+  else buyEgg();
+}
+
+onGuardedClick(primaryAction, action);
+onGuardedClick(eggButton, eggAction);
+onGuardedClick(lifeToggle, () => {
+  state.paused = !state.paused;
+  state.lastTick = performance.now();
+  render();
+});
+onGuardedClick(skipMinute, () => {
+  state.activeSeconds += 60;
+  finishTimerIfNeeded();
+  render();
+});
+document.querySelectorAll("[data-mode]").forEach(button => onGuardedClick(button, () => {
+  if (state.phase === "holding") return;
+  state.mode = button.dataset.mode;
+  render();
+}));
+targetMinutes.addEventListener("change", () => {
+  state.targetMinutes = Math.max(1, Math.min(180, Number(targetMinutes.value) || 30));
+  targetMinutes.value = String(state.targetMinutes);
+  render();
+});
+onGuardedClick($("#topButton"), () => window.scrollTo({ top: 0, behavior: "smooth" }));
+onGuardedClick($("#closeDialog"), () => hatchDialog.close());
+onGuardedClick(timerHatchButton, beginHatch);
+onGuardedClick($("#confirmCancel"), cancelEgg);
+onGuardedClick($("#dismissCancel"), dismissCancelDialog);
+hatchDialog.addEventListener("click", event => {
+  if (event.target === hatchDialog) hatchDialog.close();
+});
+cancelDialog.addEventListener("click", event => {
+  if (event.target === cancelDialog) dismissCancelDialog();
+});
+cancelDialog.addEventListener("cancel", event => {
+  event.preventDefault();
+  dismissCancelDialog();
+});
+
+document.addEventListener("keydown", event => {
+  const target = event.target;
+  const typing = target instanceof HTMLElement && (target.matches("input, textarea, select") || target.isContentEditable);
+  if (!typing && event.code === "Space" && state.hatching) {
+    event.preventDefault();
+    cancelHatch();
+    return;
+  }
+  if (!typing && event.key.toLowerCase() === "z" && state.phase === "holding") {
+    event.preventDefault();
+    beginHatch();
+  }
+});
+
+function finishTimerIfNeeded() {
+  if (state.mode !== "timer" || state.timerReady || state.activeSeconds < state.targetMinutes * 60) return;
+  state.activeSeconds = state.targetMinutes * 60;
+  state.paused = true;
+  state.timerReady = true;
+  if (!timerDialog.open && !cancelDialog.open) timerDialog.showModal();
+}
+
+function tick(now) {
+  if (state.phase === "holding") {
+    if (state.lastTick === null) state.lastTick = now;
+    if (!state.paused) state.activeSeconds += Math.min((now - state.lastTick) / 1000, 1);
+    state.lastTick = now;
+    if (state.hatching && now - state.hatchStartedAt >= HATCH_DURATION_MS) {
+      completeHatch();
+      requestAnimationFrame(tick);
+      return;
+    }
+    finishTimerIfNeeded();
+    render();
+  }
+  requestAnimationFrame(tick);
+}
+
+render();
+requestAnimationFrame(tick);

@@ -1,58 +1,136 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#090b0d"><meta name="description" content="Live, explainable counter-item planning for Deadlock.">
-  <link rel="icon" type="image/svg+xml" href="./favicon.svg"><link rel="stylesheet" href="./styles.css">
-  <title>Deadlock Plus — Live Counterbuild</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17101d">
+  <meta name="description" content="一颗会随时间增值的金鹅蛋。存活、等待，然后决定何时孵化。">
+  <link rel="icon" type="image/svg+xml" href="./assets/site-icon.svg?v=7">
+  <link rel="stylesheet" href="./styles.css?v=11">
+  <title>金鹅蛋 · Golden Goose Egg</title>
 </head>
 <body>
-<div class="grid-bg"></div><div class="shell">
-  <header class="topbar">
-    <a class="brand" href="#"><span class="brandmark">D<b>+</b></span><span>DEADLOCK <b>PLUS</b></span></a>
-    <nav><a class="active" href="#workspace">Counterbuild</a><a href="#threats">Threat model</a></nav>
-    <div id="globalStatus" class="status" data-state="idle"><i></i><span id="globalStatusText">Manual mode</span></div>
+  <div class="noise" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="wordmark" href="/" aria-label="金鹅蛋首页">
+      <span class="wordmark-mark"><img src="./assets/site-icon.svg?v=7" alt=""></span>
+      <span>GOLDEN GOOSE EGG</span>
+    </a>
+    <p><span class="status-dot"></span> Whats the plan?</p>
   </header>
-  <main id="workspace" class="workspace">
-    <aside class="rail">
-      <section class="rail-section">
-        <p class="kicker"><span>01</span> MATCH SOURCE</p>
-        <div class="split"><div><h2>Live telemetry</h2><small>Rotating public match</small></div><em id="sourceBadge" class="badge">OFFLINE</em></div>
-        <button id="connectLive" class="primary"><i></i><span id="connectLabel">Connect live match</span></button>
-        <p id="sourceMessage" class="note">Streams a real public match with the upstream spectator delay. No account or API key required.</p>
-        <div class="facts"><div><small>Match</small><strong id="matchId">—</strong></div><div><small>Game clock</small><strong id="gameClock">—</strong></div><div><small>Last event</small><strong id="lastEvent">—</strong></div></div>
+
+  <main id="top">
+    <section class="hero">
+      <div class="intro">
+        <p class="eyebrow">DEADLOCK · TIER 1 SPIRIT ITEM</p>
+        <h1 class="hero-title">
+          <span class="title-gold">金蛋</span>
+          <span class="title-or">还是</span>
+          <em class="title-curse">诅咒?</em>
+        </h1>
+      </div>
+
+      <section class="egg-stage" aria-label="金鹅蛋孵化器">
+        <div class="stage-orbit orbit-one"></div>
+        <div class="stage-orbit orbit-two"></div>
+        <div id="eggAura" class="egg-aura"></div>
+        <button id="eggButton" class="egg-button" type="button" aria-label="购买金鹅蛋">
+          <img src="./assets/egg-icon.png" alt="Deadlock 金鹅蛋物品图标">
+        </button>
+        <p id="eggState" class="egg-state">尚未购入</p>
       </section>
-      <section class="rail-section">
-        <p class="kicker"><span>02</span> PERSPECTIVE</p>
-        <button id="perspectiveButton" class="perspective"><span id="playerMonogram" class="mono">HA</span><span><small>Building for</small><strong id="playerName">Haze</strong><em id="playerRole">Gun assassin</em></span><b>EDIT</b></button>
-        <label for="livePerspective">Live player</label><select id="livePerspective" disabled><option>Connect a match first</option></select>
-      </section>
-      <section class="rail-section">
-        <p class="kicker"><span>03</span> ENEMY DRAFT <em id="enemyCount">3 / 6</em></p><div id="enemyRoster" class="roster"></div>
-        <button id="editDraft" class="text-button">Edit manual draft <span>↗</span></button>
-      </section>
-      <div class="delay"><b>~</b><p><strong>Spectator delayed</strong>Public telemetry trails the game by roughly 60–90 seconds.</p></div>
-    </aside>
-    <section class="surface">
-      <header class="hero-head"><div><p class="eyebrow">ADAPTIVE ITEM INTELLIGENCE</p><h1>Counter the draft.<br><span>Keep your tempo.</span></h1></div><div class="phase"><small>Match phase</small><div id="phaseTabs"><button data-phase="lane">Lane</button><button class="active" data-phase="mid">Mid</button><button data-phase="late">Late</button></div></div></header>
-      <section class="signals">
-        <div class="pressure"><em>NOW</em><span><small>Primary pressure</small><strong id="primaryPressure">Weapon damage</strong></span></div>
-        <div id="threatChips" class="chips"></div>
-        <div class="budget"><label for="budgetRange">Target spend <output id="budgetValue">6,400</output></label><input id="budgetRange" type="range" min="800" max="16000" step="800" value="6400"></div>
-      </section>
-      <section class="board">
-        <div class="board-head"><div><p class="eyebrow">RECOMMENDED RESPONSE</p><h2>Next purchase</h2></div><label class="toggle"><input id="activeOnly" type="checkbox"><span></span>Active items only</label></div>
-        <div id="heroRecommendation" class="featured"></div>
-        <div class="route-head"><span>FOLLOW-UP ROUTE</span><span>Ranked by current threat coverage</span></div><div id="itemRoute" class="route"></div>
-      </section>
-      <section id="threats" class="lower">
-        <article class="card"><div class="card-head"><div><p class="eyebrow">THREAT MODEL</p><h2>Damage & control profile</h2></div><em id="pressureLevel" class="danger">HIGH PRESSURE</em></div><div id="threatBars" class="bars"></div></article>
-        <article class="card"><div class="card-head"><div><p class="eyebrow">LIVE LOG</p><h2>Match signals</h2></div><em id="eventCount">0 EVENTS</em></div><div id="eventLog" class="log"></div></article>
+
+      <section class="ledger" aria-live="polite">
+        <div class="mode-config">
+          <div class="mode-tabs" role="group" aria-label="孵化模式">
+            <button class="active" type="button" data-mode="infinite" aria-pressed="true">无限孵化</button>
+            <button type="button" data-mode="timer" aria-pressed="false">定时孵化</button>
+          </div>
+          <label id="timerConfig" class="timer-config" hidden>
+            <span>孵化时间</span>
+            <input id="targetMinutes" type="number" min="1" max="180" step="1" value="30" inputmode="numeric">
+            <em>分钟</em>
+          </label>
+        </div>
+        <div class="ledger-head">
+          <span>当前可获得</span>
+          <strong><img src="./assets/soul-icon-transparent.png" alt="魂魄"> <output id="soulValue">400</output></strong>
+        </div>
+        <div class="growth-track" aria-hidden="true"><span id="growthFill"></span></div>
+        <div class="progress-caption"><span id="progressLabel">下一次增益</span><strong id="progressTime">01:00</strong></div>
+        <div class="ledger-meta">
+          <p><span>持有时间</span><strong id="heldTime">00:00</strong></p>
+          <p><span>已积累</span><strong id="accruedSouls">0 魂魄</strong></p>
+          <p><span>永久增益</span><strong id="buffCount">0 个</strong></p>
+        </div>
+        <div class="controls">
+          <button id="primaryAction" class="primary" type="button">购入金鹅蛋 <span>800</span></button>
+          <button id="lifeToggle" class="secondary" type="button" disabled>暂停孵化</button>
+          <button id="skipMinute" class="secondary" type="button" disabled>快进 1 分钟</button>
+        </div>
+        <p id="hint" class="hint">无限模式下，进度条每分钟循环一次；你可以随时孵化。</p>
       </section>
     </section>
+
+    <section class="buff-section" aria-labelledby="buffTitle">
+      <div class="section-copy">
+        <p class="eyebrow">PERMANENT BUFFS</p>
+        <h2 id="buffTitle">每一分钟，<br>多一个留下来的理由。</h2>
+        <p>孵化时，每积累 80 魂魄获得一个随机永久增益。暂停期间，鹅蛋停止生长。</p>
+      </div>
+      <div class="buff-grid" id="buffGrid">
+        <article data-buff="fire"><img src="./assets/buff-fire-rate.svg" alt=""><span>射速</span><strong>等待孵化</strong></article>
+        <article data-buff="ammo"><img src="./assets/buff-ammo.svg" alt=""><span>弹药量</span><strong>等待孵化</strong></article>
+        <article data-buff="cooldown"><img src="./assets/buff-cooldown.svg" alt=""><span>冷却缩减</span><strong>等待孵化</strong></article>
+        <article data-buff="weapon"><img src="./assets/buff-weapon.svg" alt=""><span>武器伤害</span><strong>等待孵化</strong></article>
+        <article data-buff="health"><img src="./assets/buff-health.svg" alt=""><span>最大生命</span><strong>等待孵化</strong></article>
+        <article data-buff="spirit"><img src="./assets/buff-spirit.svg" alt=""><span>元灵力量</span><strong>等待孵化</strong></article>
+      </div>
+    </section>
+
+    <section class="decision">
+      <p class="eyebrow">THE GAMBLE</p>
+      <blockquote>“越早孵化，越早变强；<br>越晚孵化，越舍不得。”</blockquote>
+      <button id="topButton" type="button">Good job!</button>
+    </section>
   </main>
-  <footer><span>Independent player tool. Not affiliated with Valve.</span><span>Live data by <a href="https://live.deadlock-api.com/docs/quickstart" target="_blank" rel="noreferrer">Deadlock Live Events</a> · Strategy snapshot 2026.09</span></footer>
-</div>
-<dialog id="draftDialog"><form method="dialog"><header><div><p class="eyebrow">MANUAL CONFIGURATION</p><h2>Set your perspective</h2></div><button value="cancel" aria-label="Close">×</button></header><section><label>Your hero</label><div id="playerGrid" class="hero-grid"></div></section><section><label>Enemy heroes <em>Choose up to six</em></label><div id="enemyGrid" class="hero-grid"></div></section><footer><span id="draftSummary">3 enemies selected</span><button id="applyDraft" class="primary compact" value="default">Apply draft</button></footer></form></dialog>
-<script type="module" src="./app.js"></script>
-</body></html>
+
+  <dialog id="hatchDialog">
+    <div class="hatch-card">
+      <p class="eyebrow">THE EGG HAS HATCHED</p>
+      <h2 id="resultTitle">鹅蛋孵化了。</h2>
+      <div class="hatch-souls"><img src="./assets/soul-icon-transparent.png" alt="魂魄"><strong id="resultSouls">400</strong><span>获得魂魄</span></div>
+      <div id="resultBuffs" class="result-buffs"></div>
+      <button id="closeDialog" class="primary" type="button">收下奖励</button>
+    </div>
+  </dialog>
+
+  <dialog id="timerDialog">
+    <div class="timer-ready-card">
+      <p class="eyebrow">TIME IS UP</p>
+      <h2>孵化时间到了。</h2>
+      <p>金鹅蛋已经准备好。点击下方按钮，或按 <kbd>Z</kbd> 孵化。</p>
+      <button id="timerHatchButton" class="primary" type="button">孵化鹅蛋 <kbd>Z</kbd></button>
+    </div>
+  </dialog>
+
+  <dialog id="cancelDialog">
+    <div class="cancel-card">
+      <p class="eyebrow">STOP THE HATCH</p>
+      <h2>取消计时？</h2>
+      <p>你确定要以400个魂魄的价格（买入价格的一半）卖出物品金鹅蛋吗？</p>
+      <div class="dialog-actions">
+        <button id="confirmCancel" class="secondary" type="button">知道了</button>
+        <button id="dismissCancel" class="secondary" type="button">取消</button>
+      </div>
+    </div>
+  </dialog>
+
+  <footer>
+    <span>一颗金鹅蛋，一段等待，一个决定。</span>
+    <span>非官方非商业粉丝作品。Deadlock、相关商标与游戏素材归 Valve Corporation 所有。</span>
+  </footer>
+
+  <script src="./app.js?v=11"></script>
+</body>
+</html>
