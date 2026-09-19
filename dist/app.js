@@ -39,7 +39,6 @@ const lifeToggle = $("#lifeToggle");
 const skipMinute = $("#skipMinute");
 const eggButton = $("#eggButton");
 const eggState = $("#eggState");
-const eggAura = $("#eggAura");
 const hatchDialog = $("#hatchDialog");
 const timerDialog = $("#timerDialog");
 const cancelDialog = $("#cancelDialog");
@@ -170,7 +169,6 @@ function render() {
   setText(lifeToggle, state.paused ? "继续孵化" : "暂停孵化");
   lifeToggle.classList.toggle("paused", state.paused);
   eggButton.classList.toggle("holding", active && !state.paused && !state.hatching && !cancelDialog.open);
-  eggAura.classList.toggle("growing", active && earned >= SOULS_PER_MINUTE);
   setText(eggState, !active
     ? "尚未购入"
     : state.hatching
@@ -342,8 +340,14 @@ function completeHatch() {
 }
 
 function action() {
-  if (state.phase === "holding") beginHatch();
+  if (state.hatching) cancelHatch();
+  else if (state.phase === "holding") beginHatch();
   else buyEgg();
+}
+
+function timerHatchAction() {
+  if (state.hatching) cancelHatch();
+  else beginHatch();
 }
 
 function eggAction() {
@@ -375,7 +379,7 @@ targetMinutes.addEventListener("change", () => {
 });
 onGuardedClick($("#topButton"), () => window.scrollTo({ top: 0, behavior: "smooth" }));
 onGuardedClick($("#closeDialog"), () => hatchDialog.close());
-onGuardedClick(timerHatchButton, beginHatch);
+onGuardedClick(timerHatchButton, timerHatchAction);
 onGuardedClick($("#confirmCancel"), cancelEgg);
 onGuardedClick($("#dismissCancel"), dismissCancelDialog);
 hatchDialog.addEventListener("click", event => {

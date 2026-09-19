@@ -45,7 +45,6 @@ h1 em { color: var(--gold); font-style: normal; }
 .orbit-two { width: 64%; aspect-ratio: 1; border-style: dashed; animation: orbit 17s linear infinite reverse; }
 .stage-orbit::after { content: ""; position: absolute; top: 13%; left: 12%; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 18px var(--gold); }
 .egg-aura { position: absolute; width: 210px; height: 210px; border-radius: 50%; background: #e76dcc; filter: blur(74px); opacity: .18; transition: opacity .6s, transform .6s; z-index: -1; }
-.egg-aura.growing { opacity: .52; transform: scale(1.4); }
 .egg-button { width: min(255px, 60vw); aspect-ratio: 1; position: relative; padding: 0; overflow: hidden; border: 0; border-radius: 28px; background: transparent; cursor: pointer; filter: drop-shadow(0 28px 35px rgba(0,0,0,.48)); transition: filter .35s ease; }
 .egg-button:hover { transform: translateY(-7px) scale(1.025); filter: drop-shadow(0 35px 48px rgba(236,113,207,.23)); }
 .egg-button:focus-visible { outline: 2px solid var(--soul); outline-offset: 10px; }
@@ -133,7 +132,7 @@ kbd { min-width: 24px; padding: 3px 7px; display: inline-grid; place-items: cent
 .result-buffs img { width: 19px; height: 19px; }
 .hatch-card .primary { width: 100%; }
 @keyframes orbit { to { transform: rotate(347deg); } }
-@keyframes breathe { 50% { transform: translateY(-5px) scale(1.025); filter: drop-shadow(0 34px 42px rgba(236,113,207,.3)); } }
+@keyframes breathe { 50% { transform: translateY(-5px) scale(1.025); } }
 @keyframes crack { 25% { transform: translateX(-5px) rotate(-1deg); } 75% { transform: translateX(5px) rotate(1deg); } }
 @media (max-width: 1100px) {
   .hero { grid-template-columns: 1fr 1fr; }
