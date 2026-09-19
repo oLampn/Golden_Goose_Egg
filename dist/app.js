@@ -2,6 +2,7 @@ const SOULS_PER_MINUTE = 80;
 const STARTING_VALUE = 400;
 const HATCH_DURATION_MS = 2000;
 const CLICK_GUARD_MS = 300;
+const UI_UPDATE_INTERVAL_MS = 250;
 const buffs = [
   { id: "fire", name: "射速", icon: "./assets/buff-fire-rate.svg", weight: 1 },
   { id: "ammo", name: "弹药量", icon: "./assets/buff-ammo.svg", weight: 1 },
@@ -45,8 +46,26 @@ const cancelDialog = $("#cancelDialog");
 const timerHatchButton = $("#timerHatchButton");
 const targetMinutes = $("#targetMinutes");
 const timerConfig = $("#timerConfig");
+const hint = $("#hint");
+const modeButtons = [...document.querySelectorAll("[data-mode]")];
 let audioContext;
+let hatchAnimationFrame = null;
 const lastButtonClick = new WeakMap();
+
+function setText(element, value) {
+  if (element.textContent !== value) element.textContent = value;
+}
+
+function setMarkup(element, value) {
+  if (element.innerHTML !== value) element.innerHTML = value;
+}
+
+function setProgress(element, value) {
+  const next = String(Math.max(0, Math.min(1, value)));
+  if (element.style.getPropertyValue("--progress") !== next) {
+    element.style.setProperty("--progress", next);
+  }
+}
 
 function onGuardedClick(button, handler) {
   button.addEventListener("click", event => {
@@ -119,46 +138,40 @@ function render() {
   const active = state.phase === "holding";
   const targetSeconds = state.targetMinutes * 60;
 
-  soulValue.textContent = String(STARTING_VALUE + earned);
-  heldTime.textContent = formatTime(state.activeSeconds);
-  accruedSouls.textContent = `${earned} 魂魄`;
-  buffCount.textContent = `${count} 个`;
+  setText(soulValue, String(STARTING_VALUE + earned));
+  setText(heldTime, formatTime(state.activeSeconds));
+  setText(accruedSouls, `${earned} 魂魄`);
+  setText(buffCount, `${count} 个`);
 
   if (state.mode === "timer") {
-    growthFill.style.width = `${Math.min(100, state.activeSeconds / targetSeconds * 100)}%`;
-    progressLabel.textContent = "定时孵化";
-    progressTime.textContent = `${formatTime(state.activeSeconds)} / ${formatTime(targetSeconds)}`;
+    setProgress(growthFill, state.activeSeconds / targetSeconds);
+    setText(progressLabel, "定时孵化");
+    setText(progressTime, `${formatTime(state.activeSeconds)} / ${formatTime(targetSeconds)}`);
   } else {
     const cycleSeconds = state.activeSeconds % 60;
-    growthFill.style.width = `${cycleSeconds / 60 * 100}%`;
-    progressLabel.textContent = "下一次增益";
-    progressTime.textContent = formatTime(cycleSeconds === 0 && state.activeSeconds > 0 ? 60 : 60 - cycleSeconds);
+    setProgress(growthFill, cycleSeconds / 60);
+    setText(progressLabel, "下一次增益");
+    setText(progressTime, formatTime(cycleSeconds === 0 && state.activeSeconds > 0 ? 60 : 60 - cycleSeconds));
   }
 
-  const hatchProgress = state.hatching && state.hatchStartedAt !== null
-    ? Math.min(1, (performance.now() - state.hatchStartedAt) / HATCH_DURATION_MS)
-    : 0;
-
-  primaryAction.innerHTML = active
+  setMarkup(primaryAction, active
     ? state.hatching
       ? `<span class="channel-label">孵化中 · 空格取消</span>`
       : `<span class="action-label">孵化鹅蛋 <kbd>Z</kbd></span><span>${STARTING_VALUE + earned}</span>`
-    : `${state.phase === "hatched" ? "再买一颗" : "购入金鹅蛋"} <span>800</span>`;
+    : `${state.phase === "hatched" ? "再买一颗" : "购入金鹅蛋"} <span>800</span>`);
   primaryAction.classList.toggle("danger-action", active);
   primaryAction.classList.toggle("channeling", state.hatching);
-  primaryAction.style.setProperty("--hatch-progress", `${hatchProgress * 100}%`);
   timerHatchButton.classList.toggle("channeling", state.hatching);
-  timerHatchButton.style.setProperty("--hatch-progress", `${hatchProgress * 100}%`);
-  timerHatchButton.innerHTML = state.hatching
+  setMarkup(timerHatchButton, state.hatching
     ? `<span class="channel-label">孵化中 · 空格取消</span>`
-    : `<span class="action-label">孵化鹅蛋 <kbd>Z</kbd></span>`;
+    : `<span class="action-label">孵化鹅蛋 <kbd>Z</kbd></span>`);
   lifeToggle.disabled = !active || state.timerReady || state.hatching;
   skipMinute.disabled = !active || state.timerReady || state.hatching;
-  lifeToggle.textContent = state.paused ? "继续孵化" : "暂停孵化";
+  setText(lifeToggle, state.paused ? "继续孵化" : "暂停孵化");
   lifeToggle.classList.toggle("paused", state.paused);
-  eggButton.classList.toggle("holding", active && !state.paused && !state.hatching);
+  eggButton.classList.toggle("holding", active && !state.paused && !state.hatching && !cancelDialog.open);
   eggAura.classList.toggle("growing", active && earned >= SOULS_PER_MINUTE);
-  eggState.textContent = !active
+  setText(eggState, !active
     ? "尚未购入"
     : state.hatching
       ? "正在孵化 · 空格取消"
@@ -168,10 +181,10 @@ function render() {
       ? "孵化暂停"
       : state.mode === "timer"
         ? `定时孵化 · ${state.targetMinutes} 分钟`
-        : `无限孵化 · ${SOULS_PER_MINUTE}/分钟`;
+        : `无限孵化 · ${SOULS_PER_MINUTE}/分钟`);
   eggButton.setAttribute("aria-label", active ? "取消金鹅蛋计时" : "购买金鹅蛋");
 
-  document.querySelectorAll("[data-mode]").forEach(button => {
+  modeButtons.forEach(button => {
     const selected = button.dataset.mode === state.mode;
     button.classList.toggle("active", selected);
     button.setAttribute("aria-pressed", String(selected));
@@ -179,9 +192,30 @@ function render() {
   });
   timerConfig.hidden = state.mode !== "timer";
   targetMinutes.disabled = active;
-  $("#hint").textContent = state.mode === "timer"
+  setText(hint, state.mode === "timer"
     ? `达到 ${state.targetMinutes} 分钟后会提醒你点击孵化；也可以提前孵化。`
-    : "无限模式下，进度条每分钟循环一次；你可以随时孵化。";
+    : "无限模式下，进度条每分钟循环一次；你可以随时孵化。");
+}
+
+function updateHatchProgress(now) {
+  if (!state.hatching || state.hatchStartedAt === null) return;
+  const progress = Math.min(1, (now - state.hatchStartedAt) / HATCH_DURATION_MS);
+  const button = timerDialog.open ? timerHatchButton : primaryAction;
+  button.style.setProperty("--hatch-progress", String(progress));
+}
+
+function animateHatch(now) {
+  if (!state.hatching || state.hatchStartedAt === null) {
+    hatchAnimationFrame = null;
+    return;
+  }
+  updateHatchProgress(now);
+  if (now - state.hatchStartedAt >= HATCH_DURATION_MS) {
+    hatchAnimationFrame = null;
+    completeHatch();
+    return;
+  }
+  hatchAnimationFrame = requestAnimationFrame(animateHatch);
 }
 
 function clearBuffResults() {
@@ -219,12 +253,16 @@ function beginHatch() {
   state.hatchStartedAt = performance.now();
   state.lastTick = state.hatchStartedAt;
   render();
+  updateHatchProgress(state.hatchStartedAt);
+  hatchAnimationFrame = requestAnimationFrame(animateHatch);
 }
 
 function cancelHatch() {
   if (!state.hatching) return;
   state.hatching = false;
   state.hatchStartedAt = null;
+  if (hatchAnimationFrame !== null) cancelAnimationFrame(hatchAnimationFrame);
+  hatchAnimationFrame = null;
   state.paused = state.pausedBeforeHatch;
   state.lastTick = performance.now();
   render();
@@ -234,10 +272,12 @@ function showCancelDialog() {
   if (state.phase !== "holding" || cancelDialog.open) return;
   if (state.hatching) cancelHatch();
   cancelDialog.showModal();
+  render();
 }
 
 function dismissCancelDialog() {
   if (cancelDialog.open) cancelDialog.close();
+  render();
   if (state.timerReady && !timerDialog.open) timerDialog.showModal();
 }
 
@@ -264,6 +304,8 @@ function completeHatch() {
   if (timerDialog.open) timerDialog.close();
   state.hatching = false;
   state.hatchStartedAt = null;
+  if (hatchAnimationFrame !== null) cancelAnimationFrame(hatchAnimationFrame);
+  hatchAnimationFrame = null;
   state.timerReady = false;
   const earned = accrued();
   const count = Math.floor(earned / SOULS_PER_MINUTE);
@@ -366,21 +408,16 @@ function finishTimerIfNeeded() {
   if (!timerDialog.open && !cancelDialog.open) timerDialog.showModal();
 }
 
-function tick(now) {
+function tick() {
+  const now = performance.now();
   if (state.phase === "holding") {
     if (state.lastTick === null) state.lastTick = now;
-    if (!state.paused) state.activeSeconds += Math.min((now - state.lastTick) / 1000, 1);
+    if (!state.paused) state.activeSeconds += Math.max(0, (now - state.lastTick) / 1000);
     state.lastTick = now;
-    if (state.hatching && now - state.hatchStartedAt >= HATCH_DURATION_MS) {
-      completeHatch();
-      requestAnimationFrame(tick);
-      return;
-    }
     finishTimerIfNeeded();
     render();
   }
-  requestAnimationFrame(tick);
 }
 
 render();
-requestAnimationFrame(tick);
+setInterval(tick, UI_UPDATE_INTERVAL_MS);
