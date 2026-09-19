@@ -271,12 +271,14 @@ function cancelHatch() {
 function showCancelDialog() {
   if (state.phase !== "holding" || cancelDialog.open) return;
   if (state.hatching) cancelHatch();
+  document.body.classList.add("cancel-modal-open");
   cancelDialog.showModal();
   render();
 }
 
 function dismissCancelDialog() {
   if (cancelDialog.open) cancelDialog.close();
+  document.body.classList.remove("cancel-modal-open");
   render();
   if (state.timerReady && !timerDialog.open) timerDialog.showModal();
 }
@@ -284,6 +286,7 @@ function dismissCancelDialog() {
 function cancelEgg() {
   if (state.phase !== "holding") return;
   if (cancelDialog.open) cancelDialog.close();
+  document.body.classList.remove("cancel-modal-open");
   if (timerDialog.open) timerDialog.close();
   state.phase = "ready";
   state.paused = false;

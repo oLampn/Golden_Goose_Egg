@@ -16,8 +16,9 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; background: var(--bg); }
-body { margin: 0; min-width: 320px; overflow-x: hidden; color: var(--ink); background: radial-gradient(circle at 68% 20%, #3b173e 0, transparent 32rem), var(--bg); }
+html { width: 100%; max-width: 100%; overflow-x: clip; scroll-behavior: smooth; background: var(--bg); }
+body { width: 100%; max-width: 100%; margin: 0; overflow-x: clip; color: var(--ink); background: radial-gradient(circle at 68% 20%, #3b173e 0, transparent 32rem), var(--bg); }
+img, svg { max-width: 100%; }
 button { font: inherit; }
 .noise { position: fixed; inset: 0; pointer-events: none; opacity: .11; z-index: 20; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E"); mix-blend-mode: overlay; }
 .site-header { width: min(1440px, calc(100% - 48px)); min-height: 82px; margin: auto; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
@@ -37,7 +38,7 @@ h1 em { color: var(--gold); font-style: normal; }
 .hero-title .title-or { margin: .14em 0 .14em .52em; color: var(--muted); font-size: 1em; line-height: .88; letter-spacing: -.035em; }
 .hero-title .title-curse { margin-left: 1.04em; color: #c7a8d2; font-size: 1em; line-height: .88; letter-spacing: -.035em; }
 .intro { align-self: center; }
-.egg-stage { min-height: 540px; position: relative; display: grid; place-items: center; isolation: isolate; }
+.egg-stage { min-width: 0; min-height: 540px; position: relative; display: grid; place-items: center; isolation: isolate; overflow: clip; }
 .egg-stage::before { content: ""; position: absolute; width: min(420px, 88%); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(238,107,210,.19), rgba(193,81,173,.05) 49%, transparent 70%); filter: blur(3px); }
 .stage-orbit { position: absolute; border: 1px solid rgba(236,113,207,.22); border-radius: 50%; transform: rotate(-13deg); }
 .orbit-one { width: 88%; aspect-ratio: 1; animation: orbit 24s linear infinite; }
@@ -45,12 +46,13 @@ h1 em { color: var(--gold); font-style: normal; }
 .stage-orbit::after { content: ""; position: absolute; top: 13%; left: 12%; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 18px var(--gold); }
 .egg-aura { position: absolute; width: 210px; height: 210px; border-radius: 50%; background: #e76dcc; filter: blur(74px); opacity: .18; transition: opacity .6s, transform .6s; z-index: -1; }
 .egg-aura.growing { opacity: .52; transform: scale(1.4); }
-.egg-button { width: min(255px, 60vw); aspect-ratio: 1; position: relative; padding: 0; border: 0; border-radius: 42% 42% 50% 50%; background: transparent; cursor: pointer; filter: drop-shadow(0 28px 35px rgba(0,0,0,.48)); transition: transform .35s ease, filter .35s ease; }
+.egg-button { width: min(255px, 60vw); aspect-ratio: 1; position: relative; padding: 0; overflow: hidden; border: 0; border-radius: 42% 42% 50% 50%; background: transparent; cursor: pointer; filter: drop-shadow(0 28px 35px rgba(0,0,0,.48)); transition: filter .35s ease; }
 .egg-button:hover { transform: translateY(-7px) scale(1.025); filter: drop-shadow(0 35px 48px rgba(236,113,207,.23)); }
 .egg-button:focus-visible { outline: 2px solid var(--soul); outline-offset: 10px; }
-.egg-button img { width: 100%; height: 100%; object-fit: contain; image-rendering: auto; border-radius: 26px; }
-.egg-button.holding { animation: breathe 3.6s ease-in-out infinite; }
-.egg-button.hatching { animation: crack .32s ease-in-out 5; }
+.egg-button img { width: 100%; height: 100%; display: block; object-fit: contain; image-rendering: auto; border-radius: 26px; transform-origin: center; }
+.egg-button.holding img { animation: breathe 3.6s ease-in-out infinite; }
+.egg-button.hatching img { animation: crack .32s ease-in-out 5; }
+body.cancel-modal-open .egg-button img { animation: none !important; transform: none !important; }
 .egg-state { position: absolute; bottom: 34px; margin: 0; padding: 8px 13px; color: var(--muted); border: 1px solid var(--line); background: rgba(16,11,20,.76); font: 700 .68rem ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; }
 .ledger { padding: 25px; border: 1px solid rgba(236,113,207,.27); background: linear-gradient(145deg, rgba(45,24,52,.88), rgba(21,14,26,.94)); box-shadow: 0 26px 80px rgba(0,0,0,.22); }
 .mode-config { margin-bottom: 24px; display: grid; gap: 12px; }
@@ -110,7 +112,7 @@ h1 em { color: var(--gold); font-style: normal; }
 .decision blockquote { margin: 12px 0 42px; color: var(--gold); font-size: clamp(2.3rem, 5.6vw, 6.3rem); font-weight: 850; line-height: 1.1; letter-spacing: -.055em; }
 .decision button { padding: 0 24px; color: var(--ink); border: 1px solid var(--line); background: transparent; font-size: .76rem; }
 footer { width: min(1440px, calc(100% - 48px)); margin: auto; padding: 27px 0 34px; display: flex; justify-content: space-between; gap: 20px; color: var(--quiet); border-top: 1px solid var(--line); font-size: .64rem; line-height: 1.6; }
-dialog { width: min(520px, calc(100% - 32px)); padding: 0; border: 1px solid rgba(241,207,99,.4); background: #1b1220; color: var(--ink); box-shadow: 0 35px 120px #000; }
+dialog { width: min(520px, calc(100dvw - 32px)); max-width: calc(100dvw - 32px); max-height: calc(100dvh - 32px); padding: 0; overflow: auto; border: 1px solid rgba(241,207,99,.4); background: #1b1220; color: var(--ink); box-shadow: 0 35px 120px #000; }
 dialog::backdrop { background: rgba(6,3,8,.82); backdrop-filter: blur(8px); }
 .hatch-card, .timer-ready-card, .cancel-card { padding: 38px; }
 .hatch-card h2 { margin: 0 0 27px; font-size: clamp(2.3rem, 8vw, 4rem); letter-spacing: -.055em; }
@@ -147,7 +149,7 @@ kbd { min-width: 24px; padding: 3px 7px; display: inline-grid; place-items: cent
   .egg-aura { filter: blur(48px); }
   .egg-button { filter: drop-shadow(0 18px 24px rgba(0,0,0,.42)); }
   .egg-button:hover { transform: none; filter: drop-shadow(0 18px 24px rgba(0,0,0,.42)); }
-  .egg-button.holding { animation-name: breathe-mobile; }
+  .egg-button.holding img { animation-name: breathe-mobile; }
   .egg-state { bottom: 8px; }
   .ledger { margin-top: 18px; padding: 20px; }
   .buff-section { display: block; padding: 80px 0; }
