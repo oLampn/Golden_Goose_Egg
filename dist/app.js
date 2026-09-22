@@ -48,6 +48,18 @@ const timerConfig = $("#timerConfig");
 const hint = $("#hint");
 const modeButtons = [...document.querySelectorAll("[data-mode]")];
 let audioContext;
+const gameSounds = {
+  purchase: "./assets/audio/ui_shop_purchase_item_01.mp3",
+  hatch: "./assets/audio/golden_egg_activate.mp3"
+};
+const audioData = new Map(Object.values(gameSounds).map(path => [
+  path,
+  fetch(path).then(response => {
+    if (!response.ok) throw new Error(`Unable to load sound: ${path}`);
+    return response.arrayBuffer();
+  })
+]));
+const decodedAudio = new Map();
 let hatchAnimationFrame = null;
 const lastButtonClick = new WeakMap();
 
@@ -94,41 +106,37 @@ function getAudioContext() {
   const AudioCtor = window.AudioContext || window.webkitAudioContext;
   if (!AudioCtor) return null;
   audioContext ||= new AudioCtor();
-  if (audioContext.state === "suspended") audioContext.resume();
   return audioContext;
 }
 
-function tone(frequency, start, duration, type = "sine", volume = 0.08) {
+async function playGameSound(path, volume = 0.7) {
   const context = getAudioContext();
   if (!context) return;
-  const oscillator = context.createOscillator();
-  const gain = context.createGain();
-  oscillator.type = type;
-  oscillator.frequency.setValueAtTime(frequency, start);
-  gain.gain.setValueAtTime(0.0001, start);
-  gain.gain.exponentialRampToValueAtTime(volume, start + 0.018);
-  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-  oscillator.connect(gain).connect(context.destination);
-  oscillator.start(start);
-  oscillator.stop(start + duration + 0.02);
+  try {
+    if (context.state === "suspended") await context.resume();
+    let buffer = decodedAudio.get(path);
+    if (!buffer) {
+      const data = await audioData.get(path);
+      buffer = await context.decodeAudioData(data.slice(0));
+      decodedAudio.set(path, buffer);
+    }
+    const source = context.createBufferSource();
+    const gain = context.createGain();
+    source.buffer = buffer;
+    gain.gain.value = volume;
+    source.connect(gain).connect(context.destination);
+    source.start();
+  } catch {
+    // Audio is optional; keep the interaction working if playback is blocked.
+  }
 }
 
 function purchaseSound() {
-  const context = getAudioContext();
-  if (!context) return;
-  const now = context.currentTime;
-  tone(392, now, .16, "triangle", .055);
-  tone(659.25, now + .09, .26, "sine", .075);
+  void playGameSound(gameSounds.purchase, 0.62);
 }
 
 function hatchSound() {
-  const context = getAudioContext();
-  if (!context) return;
-  const now = context.currentTime;
-  [523.25, 659.25, 783.99, 1046.5].forEach((frequency, index) => {
-    tone(frequency, now + index * .075, .34, index < 2 ? "triangle" : "sine", .065);
-  });
-  tone(1567.98, now + .34, .7, "sine", .04);
+  void playGameSound(gameSounds.hatch, 0.72);
 }
 
 function render() {
